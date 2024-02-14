@@ -8,19 +8,14 @@ class LinkedList:
             self.value = value
 
     head:Item = None
-    __count = 0
 
-    @property
-    def count(self):
+    def __len__(self):
         cur = self.head
         tot = 0
         while cur:
             tot += 1
             cur = cur.next
         return tot
-    
-    #@count.setter
-    #def count(self):
     
     def append_begin(self, value):
         item = LinkedList.Item()
@@ -51,16 +46,17 @@ class LinkedList:
         return st
     
     def __str__(self):
-        st = ''
-        for i in self.get_all_list():
-            st += f'{str(i)} '
-        st = st.strip()
-        return st
+        st = []
+        cur = self.head
+        while cur:
+            st.append(str(cur.value))
+            cur = cur.next
+        return ''.join(st)
 
     def append_by_index(self, value, index):
         '''Метод всавляет значение по указанному индексу,
         оставшиеся элементы сдвигаются'''
-        dl = int(self.count)
+        dl = len(self)
         fl = False
 
         if index < 0:
@@ -106,7 +102,7 @@ class LinkedList:
         cur = self.head
         if self.head == None:
             raise ValueError('LinkedList пуст')
-        if self.count == 1:
+        if len(self) == 1:
             self.head = None
             return
         #for _ in range(self.len_link_list()-2):
@@ -115,7 +111,7 @@ class LinkedList:
         cur.next = None
         
     def remove_at(self, index):
-        dl = int(self.count)
+        dl = len(self)
 
         if index < 0:
             if abs(index) > dl:
@@ -140,75 +136,62 @@ class LinkedList:
         cur.next = cur.next.next
         
     def remove_first_value(self, value):
-        if value not in self.get_all_list():
-            raise ValueError(f'Данного значения ({value}) нет в списке')
 
         cur = self.head
-        tot = 0
-        while cur.next != None:
-            if cur.value == value:
-                break
-            cur = cur.next
-            tot += 1
+        count_value = 0
+
+        if self.head == None:
+            raise ValueError("Список пуст")
         
-        self.remove_at(tot)
+        elif self.head.value == value:
+            if self.head.next == None:
+                self.head = None
+            else:
+                self.head = cur.next
+            return
+
+        while cur.next != None:
+            if cur.next.value == value:
+                if cur.next.next == None:
+                    cur.next = None
+                    count_value += 1
+                    return
+                else:
+                    cur.next = cur.next.next
+                    count_value += 1
+                    return
+                
+            cur = cur.next
+
+        if count_value == 0:
+            raise ValueError(f'Данного значения ({value}) нет в списке')
 
     def remove_last_value(self, value):
 
-        lst = self.get_all_list()
-        if value not in lst:
+        cur = self.head
+        count_value = 0
+
+        while cur != None:
+            if cur.value == value:
+                count_value += 1
+            cur = cur.next
+
+        if count_value == 0:
             raise ValueError(f'Данного значения ({value}) нет в списке')      
-
-        tot = self.count-1
-        while lst[tot] != value:
-            tot -= 1
         
-        self.remove_at(tot)
+        cur_2 = self.head
+        tot = 0
 
-
-#Формирование списка
-my_list = LinkedList()
-#my_list.append_end(2)
-my_list.append_end(3)
-my_list.append_end(4)
-my_list.append_end(5)
-my_list.append_end(0)
-my_list.append_by_index(1, 1)
-#my_list.append_end(7)
-print(my_list.__str__(), end='\n\n')
-
-my_list.remove_at(-5)
-# #Добавление по индексу
-#my_list.append_by_index(33, -5)
-print(my_list.__str__(), end='\n\n')
-
-# #Удаление первого
-my_list.remove_first()
-print(my_list.__str__(), end='\n\n')
-
-# #Удаление последнего
-#my_list.remove_last()
-print(my_list.__str__(), end='\n\n')
-
-# #Удаление по индексу
-#my_list.remove_at(5)
-print(my_list.__str__(), end='\n\n')
-
-# #Удаление первого вхождения
-my_list.append_end(4)
-print(my_list.__str__(), end='\n\n')
-my_list.remove_first_value(4)
-print(my_list.__str__(), end='\n\n')
-
-# #Удаление последнего вхождения
-my_list.append_end(33)
-print(my_list.__str__(), end='\n\n')
-my_list.remove_last_value(33)
-print(my_list.__str__(), end='\n\n')
-# # print(my_list.head.value)
-# # print(my_list.head.next.value)
-# # print(my_list.head.next.next.value)
-# # print(my_list.head.next.next.next.value)
-# # print(my_list.head.next.next.next.next.value)
-# # print(my_list.head.next.next.next.next.next.value)
-# # print(my_list.head.next.next.next.next.next.next.value)]
+        while cur_2.next != None:
+            if cur_2.next.value == value and count_value == tot+1:
+                if cur_2.next.next == None:
+                    cur_2.next = None
+                    break
+                else:
+                    cur_2.next = cur_2.next.next
+                    break
+            elif cur_2.value == value:
+                tot += 1
+            cur_2 = cur_2.next
+        else:
+            self.head = None
